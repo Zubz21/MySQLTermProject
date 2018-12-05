@@ -1,0 +1,70 @@
+A People can belong to 0 to 1 Customers
+A Customer belongs to one and only one People
+A People can belong to 0 to 1 Employees
+An Employee belongs to one and only one People
+An Employee can belong to 0 to 1 Service Technicians
+A Service Technicians belongs to one and only one Employee
+An Employee can belong to 0 to 1 Mechanics
+A Mechanics belongs to one and only one Employee
+A Mechanics obtains 1 to many Mechanic Certifications
+A Mechanic Certifications is obtained by one and only one Mechanics
+A Mechanic Certification gets one and only one Certification
+A Certification is gotten by 1 to many Mechanic Certifications
+A Mechanic mentors 0 to many Mentorships
+A Mentorship is mentored by one and only one Mechanic
+A Mechanic must be related to 0 to many Mechanic Skills
+A Mechanic Skills relates to one and only one Mechanic
+A Mechanic Skills must be related to one and only one Skills
+A Skills may be related to 0 to many Mechanic Skills
+A Mentorship learns one and only one Skills
+A Skills a is learned by 0 to many Mentorships
+A Mechanics contains 0 to many ServiceTask
+A Service Task is contained by one and only one Mechanics
+A Skills is required by one to many Required Skills
+A Required Skills requires one and only one Skills
+A Required Skills is required by one to many Maintenance Items
+A Maintenance Items requires one and only one Required Skills
+A Service Technicians writes 0 to many Service orders
+A Service Orders is written by one and only one Service Technicians
+A Service Orders determines 0 to many Maintenance Packages
+A Maintenance Packages is determined by one and only one Service Orders
+A Maintenance Packages contains one to many Maintenance Items
+A Maintenance Items is contained by at most one Maintenance Packages
+A Maintenance Packages can belong to 0 to 1 Interval
+An Interval belongs to one and only one Maintenance Packages
+A General belongs to one and only one Maintenance Packages
+A Maintenance Packages can belong to 0 to 1 General
+A Service Interval is given to one and only one Vehicles
+A Vehicle is given one to many Service Interval  
+A Vehicles queues 0 to many Service Orders
+A Service Orders is queued by one and only one Vehicles
+An Appointment belongs to one and only one Steady
+A Steady belongs to one to many Appointments
+A Vehicles participates in one to many Appointments
+An Appointments is participated by one and only one Vehicles
+A Maintenance Items must be related to 0 to many Tows.
+A Tow must be related to one and only one Maintenance Items. 
+A Corporation gets 0 to many Tows
+A Tows is gotten by one and only one Corporation
+A Corporation is located at 1 to many Address
+An Address is located at by one and only one Corporation
+A Customers can belong to 0 to 1 Corporation
+A Corporation belongs to one and only one Customers
+A Customers can belong to 0 to 1 Individual
+An Individual belongs to one and only one Customers
+A Customers can belong to 0 to 1 Current
+A Current belongs to one and only one Customers
+A Current belongs to 0 to many Prospective
+A Prospective belongs to one and only one Current
+A Customers can belong to 0 to 1 Prospective
+A Prospective belongs to one and only one Customers
+A Current possess one to many Vehicles
+A Vehicles is possessed by one and only one Current
+A Prospective receives one to three Specials
+A Specials is received by one and only one Prospective
+A Current can belong to 0 to 1 Premier
+A Premier belongs to one and only one Current
+A Current can belong to 0 to 1 Steady
+A Steady belongs to one and only one Current
+A Steady receives 0 to many Notifications
+A Notification is received by one and only one Steady
