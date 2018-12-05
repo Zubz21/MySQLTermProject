@@ -1,0 +1,50 @@
+skillName: This is the required skill a mechanic needs in order to complete a specific class.
+skillName: The name of a skill that a mechanic may have acquired, learned or is learning.
+taskID: a surrogate key used in place as foreign key to many other classes, in order to save data, refers back to Maintenance task class.
+taskName: The service action that a customer has ordered.
+price: the amount of money a specific Maintenance task costs.
+taskDurationEstimate: the estimated amount of time a mechanic will to to finish a service task.
+packageID: a surrogate key used to refer back to the maintenance package class.
+orderNumber:   a surrogate key used to distinguish one service order from another.
+peopleID: a surrogate key used to refer back to the peoples class.
+timeStampCreated: The recorded time when a service action begins.
+timeStampComplete:  The recorded time when a service action ends.
+vin: a Unique code a car receives from the manufacturer,could be decoded to gain information from a car.
+writeUpStatement:a brief description of what the specific maintenance packages entails.
+maintenenceInterval: the amount of recommended miles a car should be driven until a another service is needed.
+make: The manufacturer responsible for the car’s creation.
+model:a name within a car’s manufacturer that is used to differential all the cars within a manufacture. 
+mileage: The amount of miles a car has been driven.
+licensePlate: A unique code, created from a state, given to a car once it has passed all DMV inspections.
+estimatedMiles: The estimated amount of miles a car is to be driven in one year. It could be updated every time a registered vehicle is dropped into the shop.
+mentorID: A surrogate key used to refer  to the mechanic class.
+startDate: the recorded date in which a mentorship has begun. 
+endDate: the recorded date in which a mentorship has seized. 
+abilities
+certifiationID: A surrogate key that is used to refer back to the Certifications class.
+timeStampComplete: the date in which a mechanic was certified to work.
+certificationName: A word given to represent the skill a mechanic has been certified to use.
+salary:  the yearly amount of money an employee is paid. 
+address: The direction a person lives in, includes: street, building number, city, state, and zip code.  
+customerType: An enumerated value( prospective, premier or steady) that a customer could be. This determines the class the customer will be a part of.
+contactID: a surrogate key that refers back to the contacts class.
+contactType: the method used to contact a person,i.e. Email or phone number.
+contact: the actual data recorded used for contact with a customer .
+firstName:self explanatory,
+lastName:self explanatory.
+registerDate: the date in which a prospective or non Dave’s automotive customer has become either a steady or premier Customer. 
+loyaltyPoints: when a steady customer spends 10 dollars they receive a loyalty point, which could be used for free services.
+Totalpayment: the estimated total yearly maintenance service cost, it is a function yearly miles driven.
+monthlyPayments: the monthly rate a premier customers pays for the maintenance services. 
+discounts: when a premier customer brings their vehicle to the shop within 2000 miles the recommended interval, Dave’s automotive will not charge more than the monthly fee the difference between the service and the monthly fee is the discount, if and only if the service is more expensive than the monthly fee. .
+referalID: in order to save who referred who, a surrogate key was used to refer to the people class.used only when a prospective customer becomes a steady customer
+prospectType: an enumerated value used to demonstrate if the prospective customer has potential or not. Either “alive” or “dead” 
+
+timesContacted:  the amount of efforts Dave’s automotive has done to convert a propective customer into a steady customer
+appointmentDate:  the date and time Dave’s automotive has set aside to work on a vehicle
+vehicleServicing: the current vehicle getting serviced on. The Vin was used to refer to the car class.
+
+maintenanceDate:  the date when a car was serviced 
+maintenanceDuration: the actual time a car’s maintenance lasted.
+
+specialType: a specific deals that Dave’s automotive offer to his prospect customers.
