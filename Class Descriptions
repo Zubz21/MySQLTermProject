@@ -1,0 +1,60 @@
+
+People- Any person that interacts with Dave's automotive. 
+
+Customer- A customer is a type of person that does or will potentially do business with Dave’s automotive.
+
+Individual- an individual is a type of customer that has only one address and represents one person
+
+Corporation- a corporation is a type of customer that has multiple addresses.
+
+Tow - a Tow is a type of service that carries an incapable car with a truck. Corporation customers get this service for free.
+
+Address- an address pertains to the corporation and its used to store the different types of addresses a corporation could have
+
+Prospective- a prospective is a type of customer that has the potential to become either  a steady customer or premier and is not registered with dave’s automotive.
+
+Specials(contact)- a specials pertains to the prospective class and is a way of enticing prospective customers into becoming a steady customer.
+
+Current- a current is a type of customer that is registered with dave’s automotive.
+
+Steady- a steady is a type of current customer that has signed up for email reminders for there vehicle maintenance.
+Notifications- the notifications class will send an email to steady customer telling them the vehicle that is due for maintenance, the mileage that the maintenance is supposed to be done at, the time to expect for the maintenance to take, and the estimate of what that maintenance will cost.  
+
+Premier -a premier is a type of current  customer that pays in monthly installments for there preventative maintenance. They’re estimated to  service their car at Dave's for 5 as long as there car is not over 100,000 miles.
+
+Vehicle - a vehicle belongs to a current customer and is a 4 wheel transportation machine registered in the DMV.
+
+Appointments - an appointment belongs to a vehicle and is a set time where a vehicle comes into Dave’s automotive for service.
+
+Service Order - a service order is a list of maintenance a car needs done.
+
+
+Maintenance List - a maintenance list specifies what  order is part of what package
+
+Maintenance packages- a group of specific maintenance items grouped for a specific season or time.
+Interval - an interval is a type of package that is done that groups maintenance items to a specific car over every certain amount of miles.
+General- a general is a type of package that groups maintenance items that could be performed at anytime of the year.
+
+Maintenance item- a maintenance item is a single specific car service action.   
+
+Required Skill - a required skill is a specific attribute that a mechanic must obtain in order to perform a specific maintenance item.
+
+Employee -An employee is a type of person that is paid by Dave’s automotive to do some type of work.
+
+Service technician- A service technician is a type of employee who writes up the maintenance items and packages that a customer’s car needs.
+
+Mechanic - A mechanic is a type of employee who services the maintenance item.
+
+Certification- A piece of paper that gives a mechanic the authority to service a vehicle. 
+
+MechanicCertification- The date of certification renewal. 
+
+Mentorship- The act of transferring one skill from one mechanic to another.
+
+Skill- A skill pertains to a mechanic. It is a specialized act required to service a specific maintenance item.
+
+Mechanic Skills- is a list of skills that a certain mechanic may posses in order to do a certain job
+
+Service task - a service task assigns a a mechanic with a maintenance item.
+
+Required Skill - a required skill assigns a skill to a maintenance it
