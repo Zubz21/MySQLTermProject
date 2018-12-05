@@ -1,0 +1,203 @@
+Queries 
+1.	List the customers.  For each customer, indicate which category he or she fall into, and his or her contact information.  If you have more than one independent categorization of customers, please indicate which category the customer falls into for all of the categorizations.
+
+SELECT firstName, lastName, customers.CUSTOMERTYPE FROM customers NATURAL JOIN people;
+ 
+
+
+2.	For each service visit, list the total cost to the customer for that visit.
+
+SELECT serviceOrders.ORDERNUMBER, SUM(price) AS Total, people.FIRSTNAME, people.LASTNAME
+FROM people INNER JOIN customers ON  people.PEOPLEID = customers.PEOPLEID
+INNER JOIN vehicles ON customers.PEOPLEID = vehicles.PEOPLEID
+INNER JOIN serviceOrders ON vehicles.VIN = serviceOrders.VIN
+INNER JOIN serviceTasks 
+ON serviceOrders.ORDERNUMBER = serviceTasks.ORDERNUMBER
+INNER JOIN maintenanceItems ON serviceTasks.TASKID = maintenanceItems.TASKID
+GROUP BY serviceOrders.ORDERNUMBER, people.FIRSTNAME, people.LASTNAME;
+ 
+
+
+3.	List the top three customers in terms of their net spending for the past two years, and the total that they have spent in that period.
+
+SELECT people.FIRSTNAME, people.LASTNAME, SUM (price) AS NETSPEND FROM people
+INNER JOIN customers ON people.PEOPLEID = customers.PEOPLEID
+INNER JOIN vehicles ON customers.PEOPLEID = vehicles.PEOPLEID
+INNER JOIN serviceOrders ON vehicles.VIN = serviceOrders.VIN
+INNER JOIN serviceTasks ON serviceOrders.ORDERNUMBER = serviceTasks.ORDERNUMBER
+INNER JOIN maintenanceItems ON serviceTasks.TASKID = maintenanceItems.TASKID
+BETWEEN '2016-05-09' AND '2018-05-09'
+GROUP BY people.FIRSTNAME, people.LASTNAME
+ORDER BY NETSPEND desc
+FETCH FIRST 3 ROWS ONLY;
+ 
+
+
+4.	Find all of the mechanics who have three or more skills.
+
+SELECT firstName,lastName,COUNT(mechanicAbilities.peopleID) AS NumberOfSkills 
+FROM mechanicAbilities
+RIGHT JOIN people ON mechanicAbilities.peopleID = people.peopleID
+GROUP BY mechanicAbilities.peopleID, firstName, lastName
+HAVING COUNT(mechanicAbilities.peopleID) >2;
+ 
+
+
+5.	Find all of the mechanics who have three or more skills in common.
+a.	Please give the name of each of the two mechanics sharing 3 or more skills.
+b.	Please make sure that any given pair of mechanics only shows up once.
+
+SELECT p1.firstName,p1.lastName,p2.firstName,p2.lastName, ma1.skillName
+FROM mechanicAbilities ma1 
+INNER JOIN mechanicAbilities ma2 USING(skillName)
+Inner join people p1 on ma1.peopleID = p1.peopleID --and ma2.peopleID = peopleID 
+Inner join people p2 on ma2.peopleID = p2.peopleID 
+WHERE ma1.PEOPLEID < ma2.PEOPLEID;
+ 
+
+
+6.	For each maintenance package, list the total cost of the maintenance package, as well as a list of all of the maintenance items within that package.
+
+SELECT DISTINCT maintenanceItems.TASKNAME, maintenancePackages.PACKAGEID, SUM (maintenanceItems.PRICE)
+FROM maintenancePackages
+INNER JOIN maintenanceList ON maintenancePackages.PACKAGEID = maintenanceList.PACKAGEID
+INNER JOIN serviceOrders ON maintenanceList.ORDERNUMBER = serviceOrders.ORDERNUMBER
+INNER JOIN serviceTasks ON serviceOrders.ORDERNUMBER = serviceTasks.ORDERNUMBER
+INNER JOIN maintenanceItems ON serviceTasks.TASKID = maintenanceItems.TASKID
+GROUP BY maintenancePackages.PACKAGEID, maintenanceItems.TASKNAME;
+
+
+
+7.	 List the customers, sorted by the number of loyalty points that they have, from largest to smallest.
+
+SELECT people.FIRSTNAME, people.LASTNAME, steadys.LOYALTYPOINTS FROM people
+INNER JOIN customers ON people.PEOPLEID = customers.PEOPLEID
+INNER JOIN currents ON customers.PEOPLEID = currents.PEOPLEID
+INNER JOIN steadys ON currents.PEOPLEID = steadys.PEOPLEID
+ORDER BY steadys.LOYALTYPOINTS DESC;
+ 
+
+
+8.	Report on the steady customers based on the net profit that we have made from them over the past year, and the dollar amount of that profit, in order from the greatest to the least.
+
+SELECT people.FIRSTNAME, people.LASTNAME, SUM (price)
+FROM people INNER JOIN customers ON people.PEOPLEID = customers.PEOPLEID
+INNER JOIN currents ON customers.PEOPLEID = currents.PEOPLEID
+INNER JOIN steadys ON currents.PEOPLEID = steadys.PEOPLEID
+INNER JOIN vehicles ON steadys.PEOPLEID = vehicles.PEOPLEID
+INNER JOIN serviceOrders ON vehicles.VIN = serviceOrders.VIN
+INNER JOIN serviceTasks ON serviceOrders.ORDERNUMBER = serviceTasks.ORDERNUMBER
+INNER JOIN maintenanceItems ON serviceTasks.TASKID = maintenanceItems.TASKID
+BETWEEN '2017-05-09' AND '2018-05-09'
+GROUP by people.FIRSTNAME, people.LASTNAME
+ORDER BY SUM(price) DESC;
+ 
+
+
+9.	List the three premier customers who have paid Dave’s Automotive the greatest amount in the past year, and the sum of their payments over that period.  Be sure to take into account any discounts that they have earned by referring prospective customers.
+
+SELECT people.FIRSTNAME, people.LASTNAME, SUM (maintenanceItems.PRICE) - premiers.DISCOUNTS AS DiscountTotal FROM people
+INNER JOIN currents ON people.PEOPLEID = currents.PEOPLEID
+INNER JOIN premiers ON currents.PEOPLEID = premiers.PEOPLEID
+INNER JOIN vehicles ON premiers.PEOPLEID = vehicles.PEOPLEID
+INNER JOIN serviceOrders ON vehicles.VIN = serviceOrders.VIN
+INNER JOIN serviceTasks ON serviceOrders.ORDERNUMBER = serviceTasks.ORDERNUMBER
+INNER JOIN maintenanceItems ON serviceTasks.TASKID = maintenanceItems.TASKID
+GROUP BY people.FIRSTNAME, people.LASTNAME, premiers.DISCOUNTS
+ORDER BY SUM (maintenanceItems.PRICE) DESC
+FETCH FIRST 3 ROWS ONLY;
+
+
+
+10.	List the five model, make, and year that have caused the most visits on average to Dave’s automotive per vehicle in the past three years, along with the average number of visits per vehicle.
+
+SELECT vehicles.MODEL, vehicles.MAKE, vehicles.YEAROF,vehicles.VIN, COUNT (appointmentDate)
+FROM vehicles INNER JOIN appointments ON vehicles.VIN = appointments.VIN
+WHERE appointmentDate BETWEEN '2015-05-09' AND '2018-05-09'
+GROUP BY vehicles.MODEL, vehicles.MAKE, vehicles.YEAROF, vehicles.VIN
+ORDER BY COUNT (appointmentDate)
+DESC
+FETCH FIRST 5 ROWS ONLY;
+	 
+
+
+11.	Find the mechanic who is mentoring the most other mechanics.  List the skills that the mechanic is passing along to the other mechanics.
+
+SELECT firstName, LastName, skillNAme FROM mentorships  
+RIGHT JOIN people ON mentorships.mentorID = people.peopleID
+WHERE mentorID = 
+(SELECT mentorID
+FROM mentorships 
+RIGHT JOIN people ON mentorships.mentorID = people.peopleID
+GROUP BY mentorID 
+ORDER BY COUNT(mentorships.endDate)
+DESC FETCH FIRST 1 ROWS ONLY );
+ 
+
+12.	Find the three skills that have the fewest mechanics who have those skills.
+
+SELECT mechanicAbilities.SKILLNAME, COUNT (mechanicAbilities.PEOPLEID) AS Mechanic 
+FROM mechanicAbilities
+GROUP BY mechanicAbilities.SKILLNAME
+ORDER BY mechanic 
+ASC
+FETCH FIRST 3 ROWS ONLY;
+ 
+
+
+13.	List the employees who are both service technicians as well as mechanics.
+
+SELECT people.FIRSTNAME, people.LASTNAME FROM people
+INNER JOIN employees ON people.PEOPLEID = employees.PEOPLEID
+INNER JOIN serviceTechnicians ON employees.PEOPLEID = serviceTechnicians.PEOPLEID
+INTERSECT
+SELECT people.FIRSTNAME, people.LASTNAME FROM people
+INNER JOIN employees ON people.PEOPLEID = employees.PEOPLEID
+INNER JOIN mechanics ON employees.PEOPLEID = mechanics.PEOPLEID;
+  
+14.	For all service intervals that we support, list the details of that service interval and the recommended maintenance package.
+
+SELECT make, model, yearOf, estimatedServiceMiles, packageID AS RecommendedPackage 
+FROM vehicles  NATURAL JOIN maintenancePackages;
+ 
+
+15.	List all maintenance items that are not part of a package.
+
+SELECT maintenanceItems.TASKNAME 
+FROM maintenanceItems
+EXCEPT
+SELECT maintenanceItems.TASKNAME
+FROM maintenanceItems INNER JOIN serviceTasks ON maintenanceItems.TASKID = serviceTasks.TASKID
+INNER JOIN serviceOrders ON serviceTasks.ORDERNUMBER = serviceOrders.ORDERNUMBER
+INNER JOIN maintenanceList ON serviceOrders.ORDERNUMBER = maintenanceList.ORDERNUMBER
+INNER JOIN maintenancePackages ON maintenanceList.PACKAGEID = maintenancePackages.PACKAGEID;
+ 
+
+
+16.	Three additional queries that demonstrate the five additional business rules.  Feel free to create additional views to support these queries if you so desire.
+a. Rule 1
+
+SELECT DISTINCT firstName,lastName,make 
+FROM people 
+LEFT JOIN vehicles ON people.peopleID = vehicles.peopleID
+INNER JOIN customers ON people.peopleID = customers.peopleID
+WHERE make = 'mercedes' 
+OR make = 'Audi';
+ 
+b. Rule 4
+
+SELECT firstName,lastName,COUNT(mentorships.endDate) --as 'mentorships completed'
+FROM mentorships 
+RIGHT JOIN people ON mentorships.peopleID = people.peopleID
+GROUP BY firstName,lastName  --mentorships.peopleID 
+HAVING COUNT(mentorships.endDate)>2;
+ 
+c. Rule 5
+
+SELECT firstName,lastName,make 
+FROM customers 
+RIGHT JOIN vehicles ON customers.peopleID = vehicles.peopleID
+RIGHT JOIN people ON customers.peopleID = people.peopleID
+WHERE firstName = 'Mimi' AND lastName = 'Opkins';
+ 
+
