@@ -1,0 +1,672 @@
+CREATE TABLE people (
+    peopleID varchar (10) NOT NULL,
+    firstName varchar(20) NOT NULL,
+    lastName varchar(20) NOT NULL,
+    email varchar (30) NOT NULL,
+    phone varchar (20) NOT NULL,
+    CONSTRAINT people_pk PRIMARY KEY (peopleID)
+);
+
+CREATE TABLE customers (
+    peopleID varchar (10) NOT NULL,
+    customerType varchar (50) NOT NULL,
+    CONSTRAINT customers_pk PRIMARY KEY (peopleID),
+    CONSTRAINT customers_ibfk_1 FOREIGN KEY (peopleID) REFERENCES people (peopleID)
+);
+
+CREATE TABLE employees (
+    peopleID varchar (10) NOT NULL,
+    salary int NOT NULL,
+    street varchar (50) NOT NULL,
+    city varchar (20) NOT NULL,
+    state varchar (20) NOT NULL,
+    zipcode varchar (10) NOT NULL,
+    CONSTRAINT employees_pk PRIMARY KEY (peopleID),
+    CONSTRAINT employees_ibfk_1 FOREIGN KEY (peopleID) REFERENCES people (peopleID)
+);
+
+CREATE TABLE corporations (
+    peopleID varchar (10) NOT NULL,
+    cname varchar (100) NOT NULL,
+    CONSTRAINT corporations_pk PRIMARY KEY (peopleID),
+    CONSTRAINT corporations_ibfk_1 FOREIGN KEY (peopleID) REFERENCES customers (peopleID)
+);
+
+CREATE TABLE individual(
+    peopleID varchar (10) NOT NULL,
+    zipcode varchar (10) NOT NULL,
+    street varchar (50) NOT NULL,
+    city varchar (20) NOT NULL,
+    state varchar (20) NOT NULL,
+    CONSTRAINT individual_pk PRIMARY KEY (peopleID),
+    CONSTRAINT individual_ibfk_1 FOREIGN KEY (peopleID) REFERENCES customers (peopleID)
+);
+
+CREATE TABLE currents (
+    peopleID varchar (10) NOT NULL,
+    registerDate date DEFAULT NULL,
+    CONSTRAINT currents_pk PRIMARY KEY (peopleID),
+    CONSTRAINT currents_ibfk_1 FOREIGN KEY (peopleID) REFERENCES customers (peopleID)
+);
+
+CREATE TABLE prospectives (
+    peopleID varchar (10) NOT NULL,
+    referralID varchar (10) NOT NULL,
+    prospectType varchar (10) NOT NULL,
+    timesContacted int DEFAULT NULL,
+    CONSTRAINT prospectives_pk PRIMARY KEY (peopleID),
+    CONSTRAINT prospectives_ibfk_1 FOREIGN KEY (peopleID) REFERENCES customers (peopleID),
+    CONSTRAINT prospectives_ibfk_2 FOREIGN KEY (referralID) REFERENCES currents (peopleID)
+);
+
+CREATE TABLE vehicles (
+    peopleID varchar (10) NOT NULL,
+    vin varchar (17) NOT NULL,
+    mileage int NOT NULL,
+    licensePlate varchar (7) NOT NULL,
+    make varchar(20) NOT NULL,
+    model varchar (20) NOT NULL,
+    yearOf varchar (5) NOT NULL,
+    estimatedServiceMiles int NOT NULL,
+    lastMileage int DEFAULT NULL,   
+    CONSTRAINT vehicles_pk PRIMARY KEY (vin),
+    CONSTRAINT vehicles_ibfk_1 FOREIGN KEY (peopleID) REFERENCES customers (peopleID)--,
+    --CONSTRAINT vehicles_ibfk_2 FOREIGN KEY (make) REFERENCES serviceInterval (make),
+    --CONSTRAINT vehicles_ibfk_3 FOREIGN KEY (model) REFERENCES serviceInterval (model),
+    --CONSTRAINT vehicles_ibfk_4 FOREIGN KEY (yearOf) REFERENCES serviceInterval (yearOf),
+    --CONSTRAINT vehicles_ibfk_5 FOREIGN KEY (estimatedServiceMiles) REFERENCES serviceInterval (estimatedServiceMiles)
+    --MIGHT HAVE TO ADD SERVICEINTERVALID
+);
+
+CREATE TABLE corpAddress (
+    peopleID varchar (10) NOT NULL,
+    addressType varchar (50) NOT NULL,
+    zipcode varchar(10) NOT NULL,
+    street varchar (50) NOT NULL,
+    city varchar(20) NOT NULL,
+    state varchar (20) NOT NULL,
+    CONSTRAINT corpAddress_pk PRIMARY KEY (peopleID, addressType),
+    CONSTRAINT corpAddress_ibfk_1 FOREIGN KEY (peopleID) REFERENCES corporations (peopleID)
+);
+
+CREATE TABLE steadys (
+    peopleID varchar (10) NOT NULL,
+    loyaltyPoints int DEFAULT NULL,
+    CONSTRAINT steadys_pk PRIMARY KEY (peopleID),  
+    CONSTRAINT steadys_ibfk_1 FOREIGN KEY (peopleID) REFERENCES currents (peopleID)
+);
+
+CREATE TABLE premiers (
+    peopleID varchar (10) NOT NULL,
+    totalPayments int NOT NULL,
+    monthlyPayments int NOT NULL,
+    discounts int DEFAULT NULL,
+    CONSTRAINT premiers_pk PRIMARY KEY (peopleID),
+    CONSTRAINT premiers_ibfk_1 FOREIGN KEY (peopleID) REFERENCES currents (peopleID)
+);
+
+CREATE TABLE specials (
+    peopleID varchar (10) NOT NULL,
+    specialType varchar (50) NOT NULL,
+    timeStampCompleted timestamp NOT NULL,
+    methodOfContact varchar (10) NOT NULL,
+    CONSTRAINT specials_pk PRIMARY KEY (peopleID, specialType, timeStampCompleted),
+    CONSTRAINT specials_ibfk_1 FOREIGN KEY (peopleID) REFERENCES prospectives (peopleID)
+);
+
+CREATE TABLE maintenancePackages (
+    packageID varchar (10) NOT NULL,
+    vin varchar (17) NOT NULL,
+    writeUpStatement varchar (500) DEFAULT NULL,
+    maintenanceInterval varchar (10) NOT NULL,
+    CONSTRAINT maintenancePackages_pk PRIMARY KEY (packageID),
+    CONSTRAINT maintenancePackages_ibfk_1 FOREIGN KEY (vin) REFERENCES vehicles (vin)
+);
+
+CREATE TABLE notifications (
+    peopleID varchar (10) NOT NULL,
+    maintenanceDate date NOT NULL,
+    maintenanceDuration time NOT NULL,
+    vin varchar (17) NOT NULL,
+    cost decimal NOT NULL,
+    mileage int NOT NULL,
+    CONSTRAINT notifications_pk PRIMARY KEY (peopleID, maintenanceDate, maintenanceDuration),
+    CONSTRAINT notifications_ibfk_1 FOREIGN KEY (peopleID) REFERENCES steadys (peopleID),
+    CONSTRAINT notifications_ibfk_2 FOREIGN KEY (vin) REFERENCES vehicles (vin)
+);
+
+CREATE TABLE appointments (
+    peopleID varchar (10) NOT NULL,
+    appointmentDate date NOT NULL,
+    vin varchar (17)  NOT NULL,
+    startTime time NOT NULL,
+    endTime time NOT NULL,
+    CONSTRAINT appointments_pk PRIMARY KEY (peopleID, appointmentDate),
+    CONSTRAINT appointments_ibfk_1 FOREIGN KEY (peopleID) REFERENCES steadys (peopleID),
+    CONSTRAINT appointments_ibfk_2 FOREIGN KEY (vin) REFERENCES vehicles (vin)
+);
+
+CREATE TABLE serviceTechnicians (
+    peopleID varchar (10) NOT NULL,
+    CONSTRAINT serviceTechnicians_pk PRIMARY KEY (peopleID),
+    CONSTRAINT serviceTechnicians_ibfk_1 FOREIGN KEY (peopleID) REFERENCES employees (peopleID)
+);
+
+CREATE TABLE serviceOrders (
+    orderNumber int NOT NULL,
+    peopleID varchar (10) NOT NULL,
+    timeStampCreated timestamp NOT NULL,
+    timeStampCompleted timestamp NOT NULL,
+    vin varchar (17) NOT NULL,
+    CONSTRAINT serviceOrders_pk PRIMARY KEY (orderNumber),
+    CONSTRAINT serviceOrders_ibfk_1 FOREIGN KEY (peopleID) REFERENCES serviceTechnicians(peopleID), 
+    CONSTRAINT serviceOrders_ibfk_2 FOREIGN KEY (vin) REFERENCES vehicles (vin)
+);
+
+CREATE TABLE skills (
+    skillName varchar (20) NOT NULL,
+    CONSTRAINT skills_pk PRIMARY KEY (skillName)
+);
+
+CREATE TABLE mechanics (
+    peopleID varchar (10) NOT NULL,
+    CONSTRAINT mechanics_pk PRIMARY KEY (peopleID),
+    CONSTRAINT mechanics_ibfk_1 FOREIGN KEY (peopleID) REFERENCES employees (peopleID)
+);
+
+CREATE TABLE mentorships (
+    peopleID varchar (10) NOT NULL,
+    mentorID varchar (10) NOT NULL,
+    startDate date NOT NULL,
+    skillName varchar (20) NOT NULL,
+    endDate date NOT NULL,
+    abilities varchar (20) DEFAULT NULL,
+    CONSTRAINT mentorships_pk PRIMARY KEY (peopleID, mentorID, startDate),
+    CONSTRAINT mentorships_ibfk_1 FOREIGN KEY (peopleID) REFERENCES mechanics (peopleID),
+    CONSTRAINT mentorships_ibfk_2 FOREIGN KEY (mentorID) REFERENCES mechanics (peopleID),
+    CONSTRAINT mentorships_ibfk_3 FOREIGN KEY (skillName) REFERENCES skills (skillName)
+);
+
+CREATE TABLE mechanicAbilities (
+    skillName varchar (20) NOT NULL,
+    peopleID varchar (10) NOT NULL,
+    CONSTRAINT mechanicAbilities_pk PRIMARY KEY (skillName, peopleID),
+    CONSTRAINT mechanicAbilities_ibfk_1 FOREIGN KEY (skillName) REFERENCES skills (skillName),
+    CONSTRAINT mechanicAbilities_ibfk_2 FOREIGN KEY (peopleID) REFERENCES mechanics (peopleID)
+);
+
+CREATE TABLE maintenanceItems (
+    taskID varchar (10) NOT NULL,
+    taskName varchar (20) NOT NULL,
+    price decimal NOT NULL,
+    taskDurationEstimate time NOT NULL,
+    CONSTRAINT maintenanceItems_pk PRIMARY KEY (taskID)
+);
+
+CREATE TABLE serviceTasks (
+    orderNumber int NOT NULL,
+    taskID varchar (10) NOT NULL,
+    peopleID varchar (10) NOT NULL,
+    CONSTRAINT serviceTasks_pk PRIMARY KEY (orderNumber, taskID),
+    CONSTRAINT serviceTasks_ibfk_1 FOREIGN KEY (orderNumber) REFERENCES serviceOrders (orderNumber),
+    CONSTRAINT serviceTasks_ibfk_2 FOREIGN KEY (taskID) REFERENCES maintenanceItems (taskID),
+    CONSTRAINT serviceTasks_ibfk_3 FOREIGN KEY (peopleID) REFERENCES mechanics (peopleID)
+);
+
+CREATE TABLE certifications (
+    certificationID varchar (10) NOT NULL,
+    certificationName varchar (20) NOT NULL,
+    CONSTRAINT certifications_pk PRIMARY KEY (certificationID)
+);
+
+CREATE TABLE mechanicCertifications (
+    peopleID varchar (10) NOT NULL,
+    certificationID varchar(10) NOT NULL,
+    timeStampCompleted date NOT NULL, 
+    CONSTRAINT mechanicCertifications_pk PRIMARY KEY (peopleID, certificationID, timeStampCompleted),
+    CONSTRAINT mechanicCertifications_ibfk_1 FOREIGN KEY (peopleID) REFERENCES mechanics (peopleID),
+    CONSTRAINT mechanicCertifications_ibfk_2 FOREIGN KEY (certificationID) REFERENCES certifications (certificationID)
+);
+
+CREATE TABLE maintenanceList (
+    packageID varchar (10) NOT NULL,
+    orderNumber int NOT NULL,
+    CONSTRAINT maintenanceList_pk PRIMARY KEY (packageID, orderNumber),
+    CONSTRAINT maintenanceList_ibfk_1 FOREIGN KEY (packageID) REFERENCES maintenancePackages (packageID),
+    CONSTRAINT maintenanceList_ibfk_2 FOREIGN KEY (orderNumber) REFERENCES serviceOrders (orderNumber)
+);
+
+CREATE TABLE tow (
+    peopleID varchar (10) NOT NULL,
+    towDateTime time NOT NULL,
+    taskID varchar (10) NOT NULL,
+    CONSTRAINT tow_pk PRIMARY KEY (taskID),
+    CONSTRAINT tow_ibfk_1 FOREIGN KEY (peopleID) REFERENCES corporations (peopleID),
+    CONSTRAINT tow_ibfk_2 FOREIGN KEY (taskID) REFERENCES maintenanceItems (taskID)
+);
+
+CREATE TABLE serviceInterval (
+    make varchar(20) NOT NULL,
+    model varchar (20) NOT NULL,
+    yearOf varchar (5) NOT NULL,
+    estimatedServiceMiles int NOT NULL,
+    CONSTRAINT serviceInterval_pk PRIMARY KEY (make,model,yearOf,estimatedServiceMiles)
+);
+
+CREATE TABLE requiredSkills (
+    taskID varchar (10) NOT NULL,
+    skillName varchar (20) NOT NULL,
+    CONSTRAINT requiredSkills_pk PRIMARY KEY (taskID, skillName),
+    CONSTRAINT requiredSkills_ibfk_1 FOREIGN KEY (taskID) REFERENCES maintenanceItems (taskID),
+    CONSTRAINT requiredSkills_ibfk_2 FOREIGN KEY (skillName) REFERENCES skills (skillName)
+);
+
+
+CREATE TABLE generals (
+    packageID varchar (10) NOT NULL,
+    CONSTRAINT generals_pk PRIMARY KEY (packageID),
+    CONSTRAINT generals_ibfk_1 FOREIGN KEY (packageID) REFERENCES maintenancePackages (packageID)
+);
+
+CREATE TABLE intervals (
+    packageID varchar (10) NOT NULL,
+    maintenanceInterval time NOT NULL,  
+    CONSTRAINT intervals_pk PRIMARY KEY (packageID),
+    CONSTRAINT intervals_ibfk_1 FOREIGN KEY (packageID) REFERENCES maintenancePackages (packageID)
+);
+
+INSERT INTO people (peopleID, firstName, lastName, email, phone) values
+('000012', 'Chris', 'Vernon', 'cvernon@gmail.com', '909-812-4356'),
+('010102', 'David', 'Johnson', 'djohnson@gmail.com', '305-909-9009'),
+('011120', 'Todd', 'Gurley', 'toddthegodd@live.com', '917-789-0909'),
+('020233', 'Cam', 'Newton', 'cnewton@yahoo.com', '305-987-7890'),
+('020302', 'Tom', 'Brady', 'tombrady@hotmail.com', '907-112-3453'),
+('030405', 'Matt', 'Ryan', 'mryan@gmail.com', '424-456-5456'),
+('033033', 'Odell', 'Beckham', 'obj@yahoo.com', '210-222-5675'),
+('030003', 'Richard', 'Sherman', 'rsherman@hotmail.com', '404-499-0121'),
+('044440', 'Patrick', 'Peterson', 'pphotgun@hotmail.com', '909-233-3003'),
+('100234', 'Antonio', 'Brown', 'ab24@yahoo.com', '714-998-3434'),
+('101110', 'Deandre', 'Hopkins', 'dhopkins@gmail.com', '714-767-5001'),
+('202020', 'Melvin', 'Gordon', 'mgthegame@yahoo.com', '210-369-9877'),
+('202345', 'Mimi', 'Opkins', 'mimiopkins@csulb.edu', '562-790-2313'),
+('908567', 'Chris', 'Paul', 'cp3houston@yahoo.com', '345-456-9867'),
+('990032', 'James', 'Harden', 'jamesharden@aol.com', '657-787-9032'),
+('900111', 'Donavan', 'Mitchell', 'dmitch09@yahoo.com', '424-656-7868'),
+('911023', 'Rudy', 'Gobert', 'rudyg@aol.com', '505-601-1023'),
+('988008', 'Kyle', 'Lowry', 'kylelow3@gmail.com', '909-200-3002'),
+('909092', 'Ben', 'Simmons', 'bensims@gmail.com', '714-212-2132'),
+('999222', 'Jacob', 'Reddick', 'jred2000@aol.com', '808-284-8747'),
+('980001', 'Steph', 'Curry', 'steph30c@aol.com', '907-465-4451'),
+('900009', 'Klay', 'Thompson', 'klayplay1@yahoo.com', '350-890-0801'),
+('919293', 'Terry', 'Rozier', 'scaryterry@aol.com', '707-676-1203'),
+('909899', 'Jason', 'Taytum', 'jaytay@gmail.com', '657-808-1024');
+
+INSERT INTO customers (peopleID, customerType) values
+('010102', 'Premier/Corporation'),
+('011120', 'Premier/Corporation'),
+('020233', 'Premier/Individual'),
+('020302', 'Steady/Individual'),
+('030405', 'Steady/Individual'),
+('033033', 'Steady/Individual'),
+('030003', 'Premier/Individual'),
+('044440', 'Prospective/Individual'),
+('100234', 'Prospective/Individual'),
+('101110', 'Prospective/Individual'),
+('202020', 'Steady/Individual'),
+('202345', 'Premier/Individual'),
+('000012', 'Steady/Individual');
+
+
+INSERT INTO employees (peopleID, salary, street, city, state, zipcode) values
+('908567', 90000, '123 Elm Street', 'Downey', 'California', '90709'),
+('990032', 45000, '9090 Moody Road', 'Cypress', 'California', '90630'),
+('900111', 53500, '1254 Bellflower Road', 'Long Beach', 'California', '91801'),
+('911023', 47850, '3100 Century Blvd', 'Los Angeles', 'California', '90990'),
+('988008', 32999, '5005 Olympic Road', 'Santa Monica', 'California', '88989'),
+('909092', 67000, '303 West Palm Ave', 'Inglewood', 'California', '90992'),
+('999222', 44400, '111 2nd Street', 'Seal Beach', 'California', '92801'),
+('980001', 35000, '510 Lincoln Ave', 'Anaheim', 'California', '92804'),
+('900009', 51250, '11017 Imperial Drive', 'Yorba Linda', 'California', '92083'),
+('919293', 48910, '400 Rosecran Ave', 'Compton', 'California', '90012'),
+('909899', 47200, '991 Taggart Run', 'Buena Park', 'California', '90121');
+
+INSERT INTO corporations (peopleID, cname) values
+('010102', 'The Walt Disney Company'),
+('011120', 'Salesforce');
+
+INSERT INTO individual (peopleID, zipcode, street, city, state) values
+('020233', '92801', '92800 Arctic Drive', 'Malibu', 'California'),
+('020302', '92809', '313 South Crane Road', 'Oxnard', 'California'),
+('030405', '90039', '448 Crystal Lane', 'Wilimington', 'California'),
+('033033', '92907', '115 Sixer Street', 'Costa Mesa', 'California'),
+('030003', '90201', '601 Packer Circle', 'Laguna Hills', 'California'),
+('044440', '93304', '1019 Virginia Court', 'Newport Beach', 'California'),
+('100234', '92450', '9010 Lovely Drive', 'Irvine', 'California'),
+('101110', '91608', '595 Walnut Ave', 'Redondo Beach', 'California'),
+('202020', '90023', '6640 Kentucky Road', 'Corona', 'California'),
+('202345', '90701', '1600 Bellflower Road', 'Long Beach', 'California'),
+('000012', '99554', '321 Kennoy Ave', 'Malibu','California');
+
+INSERT INTO currents (peopleID, registerDate) values
+('010102', '2010-12-02'),
+('011120', '2011-03-09'),
+('020233', '2016-10-30'),
+('020302', '2017-09-18'),
+('030405', '2017-12-06'),
+('033033', '2015-06-23'),
+('030003', '2018-01-31'),
+('044440', NULL),
+('100234', NULL),
+('101110', NULL),
+('202020', '2014-08-19'),
+('000012', '2016-01-09');
+
+INSERT INTO prospectives (peopleID, referralID, prospectType, timesContacted) values
+('044440', '020233', 'Alive', 1),
+('100234', '030405', 'Alive', 2),
+('101110', '202020', 'Alive', 2);
+
+INSERT INTO vehicles (peopleID, vin, mileage, licensePlate, make, model, yearOf, estimatedServiceMiles, lastMileage) values
+('010102', '1HGED3551KA144137', 20000, '7YUN010', 'Dodge', 'Challenger', '2015', 30000, NULL),
+('011120', '1fmhe21h9mhb12514', 11000, '4DEF431', 'Toyota', 'Corolla', '2018', 30000, NULL),
+('010102', '1G11B5SL9FF138279', 50000, '5TRE333', 'Chevy', 'Silverado', '2013', 65000, 35000),
+('011120', '1GTR2VE78DZ150511', 88900, '3CUK098', 'Honda', 'CRV', '2008', 90000, 60000),
+('010102', '4A4MN21S15E008612', 5900, '7HXV610', 'Mercedes', 'AMG600', '2016', 30000, NULL),
+('011120', '1gjgg39n4sf594868', 200000, '9XBN878', 'Audi', 'A7', '2002', 210000, 180000),
+('010102', '3GNAL2EK8CS550293', 30000 , '6YTH909', 'Toyota', 'Camry', '2016', 50000, 10000),
+('011120', '1FV6GFAC5TL653495', 100000, '9LKJ123', 'Honda', 'Civic', '2003', 110000, 80000),
+('020233', '4V1WDBCF3RN671643', 120000, '3RWU987', 'Nissan', 'Altima', '2007', 125000, 95000),
+('020302', '1FDRF3G63DEA86393', 45000, '7RUP434', 'Chevy', 'Camaro', '2014', 60000, 30000),
+('030405', '478TE224924326801', 1000, '8ZXC101', 'Dodge', 'Charger', '2018', 30000, NULL),
+('033033', '1G4CF54C8K1673723', 78900, '9POA718', 'Ford', 'Mustang', '2012', 80000, 50000),
+('030003', '2GTEC19V031487632', 55200, '5DAS300', 'Mercedes', 'SL550', '2015', 80000, 50000),
+('044440', '1FTFE26Y8FHC14877', 10000, '2OLM489', 'Kia', 'Soul', '2018', 30000, NUll),
+('100234', '3GTRKTE3XAG289889', 200, '4RTE879', 'Hyundai', 'Sonata', '2018', 30000, NULL),
+('101110', '1FTRX17L32KB92594', 16000, '1WQY556', 'Chrysler', '300', '2017', 30000, NULL),
+('202020', '2C3HH76V9YH407723', 115690, '5CVX412', 'Audi', 'A4', '2000', 120000, 90000),
+('202345', '2P1LL98K9QW600980', 45000, '3PPX209', 'Tesla', 'Roadster', '2017', 50000, 30000),
+('000012', '7L9KQ23L1ER898873', 60000, '9NMN664', 'Ferrari', 'F500', '2016', 70000,40000);
+
+INSERT INTO corpAddress (peopleID, addressType, zipcode, street, city, state) values
+('010102', 'Mailing', '30334', '330 Kross Road', 'Campbell', 'Ohio'),
+('011120', 'Mailing', '80880', '1114 West Santori Ave', 'Phoeniz', 'Arizona'),
+('010102', 'Billing', '30345', '9112 Glazer Lane', 'Columbus', 'Ohio'),
+('011120', 'Billing', '80912', '900 Gold Circle', 'Tempe', 'Arizona'),
+('010102', 'Vehicle Pickup', '92809', '1002 Kramer Blvd', 'Pasadena', 'California'),
+('011120', 'Vehicle Pickup', '90802', '8085 Euclid Street', 'Santa Ana', 'California');
+
+INSERT INTO steadys (peopleID, loyaltyPoints) values
+('020302', 85),
+('030405', 23),
+('033033', 10),
+('202020', 109),
+('000012', 45);
+
+INSERT INTO premiers (peopleID, totalPayments, monthlyPayments, discounts) values
+('010102', 34, 600, 10),
+('011120', 12, 450, 5),
+('020233', 29, 550, 12),
+('030003', 40, 490, 23),
+('202345', 6, 220, 40);
+
+
+INSERT INTO specials (peopleID, specialType, timeStampCompleted, methodOfContact) values
+('044440', '50% On Tires', '2018-05-01 11:59:59', 'email'),
+('100234', 'Free Oil Change', '2018-04-22 16:34:30', 'email'),
+('101110', '50% On Tires', '2018-04-29 10:20:55', 'phone');
+
+INSERT INTO maintenancePackages (packageID, vin, writeUpStatement, maintenanceInterval) values --NOT SURE WHAT TO WRITE IN MAINTENANCEINTERVAL
+('1001', '1HGED3551KA144137', 'Vehicles needs oil change and new motor oil', 'general' ),
+('1005', '1fmhe21h9mhb12514', 'All tires need to be changed', 'general'),
+('1007', '1G11B5SL9FF138279', 'Alignment on vehicle needs to be adjusted', 'general'),
+('1004', '1GTR2VE78DZ150511', 'Sterring wheel is jammed in one direction', 'general'),
+('1009', '4A4MN21S15E008612', 'Air Conditioner not fuctioning properly', 'general'),
+('1012', '1gjgg39n4sf594868', 'Vehicle needs new brake fluid', 'general'),
+('1019', '3GNAL2EK8CS550293', 'Front hood of the car needs new paint job', 'general'),
+('1023', '1FV6GFAC5TL653495', 'Back left window needs to be replaced', 'general'),
+('1024', '4V1WDBCF3RN671643', 'Car is severly lacking antifreeze', 'general'),
+('1030', '1FDRF3G63DEA86393', 'Gear shift is jammed', 'general'),
+('1032', '478TE224924326801', 'Vehicle is missing screws to hold tires in', 'general'),
+('1038', '1G4CF54C8K1673723', 'Trunk of the vehicle needs to repainted', 'general'),
+('1045', '2GTEC19V031487632', 'Vehicles needs complete engine change', 'general'),
+('1049', '1FTFE26Y8FHC14877', 'Vehicles brakes are failing', 'general'),
+('1050', '3GTRKTE3XAG289889', 'Front right window needs to be replaced', 'general'),
+('1053', '1FTRX17L32KB92594', 'All four windows need to be tinted', 'general'),
+('1056', '2C3HH76V9YH407723', 'Vehicle needs new door on driver seat side', 'general'),
+('1060', '7L9KQ23L1ER898873', 'Car is salvagable for parts', 'general');
+
+INSERT INTO notifications (peopleID, maintenanceDate, maintenanceDuration, vin, cost, mileage) values
+('020302', '2018-06-30', '01:30:00', '1FDRF3G63DEA86393', 200.00, 45000),
+('030405', '2018-09-22', '03:00:00', '478TE224924326801', 450.00, 1000),
+('033033', '2018-07-07', '01:45:00', '1G4CF54C8K1673723', 165.00, 78900),
+('202020', '2018-08-28', '01:30:00', '2C3HH76V9YH407723', 225.00, 115690),
+('000012', '2018-05-20', '02:00:00', '7L9KQ23L1ER898873', 137.00, 60000);
+
+INSERT INTO appointments (peopleID, appointmentDate, vin, startTime, endTime) values
+('020302', '2018-07-01', '1FDRF3G63DEA86393', '13:00:00', '14:30:00'),
+('030405', '2018-07-02', '478TE224924326801', '09:50:00', '12:00:00'),
+('033033', '2018-07-09', '1G4CF54C8K1673723', '13:45:00', '14:45:00'),
+('202020', '2018-09-03', '2C3HH76V9YH407723', '08:00:00', '12:00:00'),
+('020302', '2016-07-01', '1FDRF3G63DEA86393', '13:00:00', '14:30:00'),
+('030405', '2016-07-02', '478TE224924326801', '09:50:00', '12:00:00'),
+('033033', '2016-07-09', '1G4CF54C8K1673723', '13:45:00', '14:45:00'),
+('202020', '2016-09-03', '2C3HH76V9YH407723', '08:00:00', '12:00:00'),
+('000012', '2016-12-12', '7L9KQ23L1ER898873', '09:00:00', '12:00:00');
+
+INSERT INTO serviceTechnicians (peopleID) values
+('908567'),
+('990032'),
+('900111'),
+('911023'),
+('909092'),
+('988008');
+
+INSERT INTO serviceOrders (orderNumber, peopleID, timeStampCreated, timeStampCompleted, vin) values
+(405,'908567', '2018-05-25 10:00:00', '2018-05-25 12:00:00', '1HGED3551KA144137'),
+(690,'990032', '2018-05-31 10:30:00', '2018-05-31 11:00:00', '1fmhe21h9mhb12514'),
+(230,'900111', '2018-06-02 12:00:00', '2018-06-02 15:00:00', '1G11B5SL9FF138279'),
+(123,'911023', '2018-06-12 09:00:00', '2018-06-12 12:00:00', '1GTR2VE78DZ150511'),
+(900,'988008', '2018-06-20 13:00:00', '2018-06-20 14:00:00', '4A4MN21S15E008612'),
+
+(546,'908567', '2018-06-20 14:30:00', '2018-06-20 16:30:00', '1gjgg39n4sf594868'),
+(409,'990032', '2018-06-22 08:00:00', '2018-06-22 12:00:00', '3GNAL2EK8CS550293'),
+(302,'900111', '2018-06-23 09:45:00', '2018-06-23 11:15:00', '1FV6GFAC5TL653495'),
+(295,'911023', '2018-06-30 10:00:00', '2018-06-30 11:30:00', '4V1WDBCF3RN671643'),
+(519,'988008', '2018-07-01 13:00:00', '2018-07-01 14:30:00', '1FDRF3G63DEA86393'),
+
+(606,'908567', '2018-07-02 09:50:00', '2018-07-02 12:00:00', '478TE224924326801'),
+(345,'990032', '2018-07-09 13:45:00', '2018-07-09 14:45:00', '1G4CF54C8K1673723'),
+(224,'900111', '2018-07-12 15:00:00', '2018-01-12 17:00:00', '2GTEC19V031487632'),
+(110,'911023', '2018-07-14 12:15:00', '2018-07-14 14:00:00', '1FTFE26Y8FHC14877'),
+(987,'988008', '2018-07-19 09:45:00', '2018-07-19 10:45:00', '3GTRKTE3XAG289889'),
+
+(808,'911023', '2018-08-01 11:15:00', '2018-08-01 13:45:00', '1FTRX17L32KB92594'),
+(580,'988008', '2018-09-03 08:00:00', '2018-09-03 12:00:00', '2C3HH76V9YH407723'),
+(999,'988008', '2018-09-04 08:00:00', '2018-09-04 12:00:00', '7L9KQ23L1ER898873');
+
+INSERT INTO skills (skillName) values
+('power'),
+('strength'),
+('speed'),
+('glass'),
+('flexible'),
+('patience'),
+('designing'),
+('wiring'),
+('molding'),
+('painting');
+
+INSERT INTO mechanics (peopleID) values
+('909092'),
+('999222'),
+('980001'),
+('900009'),
+('919293'),
+('909899');
+
+INSERT INTO mentorships (peopleID, mentorID, startDate, skillName, endDate, abilities) values
+('999222', '909092', '2018-05-01', 'power', '2018-06-01', NULL),
+('980001', '909092', '2018-04-15', 'wiring', '2018-07-15', NULL),
+('900009', '909899', '2018-05-10', 'molding', '2018-06-24', NULL),
+('919293', '909899', '2018-07-02', 'painting', '2018-07-23', NULL),
+('919293', '900009', '2018-05-04', 'molding', '2018-06-24', NULL),
+('919293', '909899', '2018-06-04', 'wiring', '2018-06-23', NULL),
+('919293', '980001', '2017-05-04', 'power', '2017-05-13', NULL),
+('980001', '909899', '2018-08-18', 'painting', '2018-08-25', NULL),
+('980001', '919293', '2018-08-18', 'power', '2018-08-25', NULL);
+
+INSERT INTO mechanicAbilities (skillName, peopleID) values
+('power', '909092'), 
+('glass', '999222'),
+('painting', '980001'),
+('patience', '919293'),
+('flexible', '909899'), 
+('strength', '909092'), 
+('speed', '909092'), 
+('glass', '909092'), 
+('wiring', '909092'), 
+('molding', '909899'), 
+('painting', '909899'), 
+('designing', '999222'),
+('power', '900009'),
+('strength', '900009'),
+('speed', '900009');
+
+
+INSERT INTO maintenanceItems (taskID, taskName, price, taskDurationEstimate) values
+('01','A1',300.00,'3:00:00'),
+('02','B2',550.00,'1:00:00'), 
+('03','C3',700.00,'3:00:00'),
+('04','D4',1100.00,'2:30:00'),
+('05','E5',390.00,'2:00:00'),
+('06','F6',660.00,'4:00:00'),
+('07','G7',600.00,'1:30:00'),
+('08','H8',275.00,'3:30:00');
+
+INSERT INTO serviceTasks (orderNumber, taskID, peopleID) values
+(405,'03','909092'),
+(690,'03','909092'),
+(230,'06','909092'),
+(123,'08','909092'),
+(900,'02','900009'),
+
+(546,'04','900009'),
+(409,'05','900009'),
+(302,'07','980001'),
+(295,'08','980001'),
+(519,'02','980001'),
+
+(606,'02','999222'),
+(345,'03','999222'),
+(224,'06','909899'),
+(110,'07','909899'),
+(987,'08','919293'),
+
+(808,'05','919293'),
+(580,'04','919293'),
+(999,'04','909899');
+
+INSERT INTO certifications (certificationID, certificationName) values
+('C100', 'transmission'),
+('C200', 'motor'),
+('C300', 'circuitry'),
+('C500', 'ventilation'),
+('C400', 'door repairs');
+
+INSERT INTO mechanicCertifications (peopleID, certificationID, timeStampCompleted) values
+('909092', 'C500', '2017-01-01'),
+('999222', 'C400', '2017-12-31'),
+('980001', 'C100', '2018-03-30'),
+('909092', 'C400', '2016-12-13'),
+('999222', 'C300', '2015-12-31'),
+('980001', 'C200', '2016-12-05'),
+('900009', 'C200', '2017-10-22'),
+('919293', 'C300', '2016-09-19'),
+('909899', 'C500', '2017-04-02');
+
+INSERT INTO maintenanceList (packageID, orderNumber) values
+('1001',405),
+('1005',690), 
+('1007',230), 
+('1004',123), 
+('1009',900), 
+('1012',546), 
+('1019',409), 
+('1023',302), 
+('1024',295), 
+('1030',519), 
+('1032',606), 
+('1038',345), 
+('1045',224), 
+('1049',110), 
+('1050',987), 
+('1053',808), 
+('1056',580),
+('1060',999); 
+
+INSERT INTO tow ( peopleID, towDateTime, taskID) values
+('010102', '12:00:00', '02'),
+('011120', '15:00:00', '03');
+
+INSERT INTO serviceInterval (make, model, yearOf, estimatedServiceMiles) values
+('Dodge', 'Challenger', '2015', 30000),
+('Toyota', 'Corolla', '2018', 30000),
+('Chevy', 'Silverado', '2013', 65000),
+('Honda', 'CRV', '2008', 90000),
+('Mercedes', 'AMG600', '2016', 30000),
+('Audi', 'A7', '2002', 210000),
+('Toyota', 'Camry', '2016', 50000),
+('Honda', 'Civic', '2003', 110000),
+('Nissan', 'Altima', '2007', 125000),
+('Chevy', 'Camaro', '2014', 60000),
+('Dodge', 'Charger', '2018', 30000),
+('Ford', 'Mustang', '2012', 80000),
+('Mercedes', 'SL550', '2015', 80000),
+('Kia', 'Soul', '2018', 30000),
+('Hyundai', 'Sonata', '2018', 30000),
+('Chrysler', '300', '2017', 30000),
+('Audi', 'A4', '2000', 120000),
+('Tesla', 'Roadster', '2017', 50000);
+
+INSERT INTO requiredSkills (taskID, skillName) values
+('01','power'),
+('01', 'strength'),
+('01', 'speed'),
+('02', 'glass'),
+('03', 'flexible'),
+('02', 'patience'),
+('02', 'designing'),
+('04', 'wiring'),
+('04', 'molding'),
+('04', 'painting'),
+('05', 'power'),
+('06', 'strength'),
+('06', 'speed'),
+('06', 'glass'),
+('07', 'flexible'),
+('05', 'patience'),
+('03', 'designing'),
+('08', 'wiring'),
+('08', 'molding'),
+('08', 'painting');
+
+INSERT INTO generals (packageID) values
+('1001'),
+('1005'), 
+('1007'), 
+('1004'), 
+('1009'), 
+('1012'), 
+('1019'), 
+('1023');
+
+INSERT INTO intervals (packageID, maintenanceInterval) values
+('1024','03:00:00'), 
+('1030','03:30:00'), 
+('1032','02:00:00'), 
+('1038','02:45:00'), 
+('1045','01:00:00'), 
+('1049','02:30:00'), 
+('1050','04:00:00'), 
+('1053','03:00:00'), 
+('1056','05:00:00');
